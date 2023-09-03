@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "vl53-400-lib"
+version = "0.1.0"
+description = "Python library for using the VL53-400 laser rangerfinder via serial port"
+authors = ["Robert J. Berger <rberger@ibd.com>"]
+readme = "README.md"
+packages = [{include = "vl53_400_lib", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyserial = "^3.5"
+loguru = "^0.7.0"
+mypy = "^1.5.1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.287"
+pytest = "^7.4.1"
+black = "^23.7.0"
+click = "^8.1.7"
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 120
+
+[tool.mypy]
+# 3rd party import
+ignore_missing_imports = true
+# dynamic typing
+disallow_any_unimported = true
+disallow_any_expr = false
+disallow_any_decorated = false
+disallow_any_explicit = true
+disallow_any_generics = false
+disallow_subclassing_any = true
+# platform
+python_version = "3.11"
+# untyped
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+# None and Optional
+no_implicit_optional = true
+# Warnings
+warn_return_any = false
+warn_unreachable = true
+# Misc
+pretty = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
