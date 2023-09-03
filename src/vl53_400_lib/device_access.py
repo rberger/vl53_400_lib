@@ -36,12 +36,20 @@ class Serial:
         try:
             while True:
                 # Read data from the serial port
-                data = self.ser.readline().decode("utf-8").strip()
+                try:
+                    data = self.ser.readline().decode("utf-8").strip()
+                except UnicodeDecodeError:
+                    logger.warning("UnicodeDecodeError outer read")
+                    continue
                 state_match = re.match(self.state_regx, data)
                 # Check if the data matches the state regex which indicates that the
                 # next line of data will contain the distance info
                 if state_match:
-                    next_data = self.ser.readline().decode("utf-8").strip()
+                    try:
+                        next_data = self.ser.readline().decode("utf-8").strip()
+                    except UnicodeDecodeError:
+                        logger.warning("UnicodeDecodeError")
+                        continue
                     data_match = re.match(self.data_regx, next_data)
                     assert data_match is not None
                     logger.debug(f"state: {state_match.groupdict()} " f"data = {data_match.groupdict()}")
@@ -49,6 +57,7 @@ class Serial:
 
         # To close the serial port gracefully, use Ctrl+C to break the loop
         except KeyboardInterrupt:
-            logger.warning("Closing the serial port.")
+            logger.warning("Keyboard Interrupt: Closing the serial port.")
             self.ser.close()
+            return {}
         return {}
