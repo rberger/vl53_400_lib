@@ -72,6 +72,20 @@ class SerialAccess:
         """
         self.send_command(b"\x50\x06\x00\x38\x00\x01")
 
+    def set_sensor_mode(self, mode: str) -> None:
+        """
+        This method sets the sensor mode.
+        Args:
+            mode (str): The mode to set. (serial, modbus, iic)
+                        Probably only want to use serial or modbus. modbus will stop the  serial updates
+        """
+        if mode == "serial":
+            self.send_command(b"\x50\x06\x00\x38\x00\x00")
+        elif mode == "modbus":
+            self.send_command(b"\x50\x06\x00\x38\x00\x01")
+        elif mode == "iic":
+            self.send_command(b"\x50\x06\x00\x38\x00\x02")
+
     def get_return_rate(self) -> str:
         """
         Gets the return rate setting

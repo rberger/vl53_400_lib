@@ -27,8 +27,8 @@ class App:
     def reset(self) -> None:
         self.device.reset()
 
-    def set_sensor_mode(self) -> None:
-        self.device.set_sensor_mode()
+    def set_sensor_mode(self, mode) -> None:
+        self.device.set_sensor_mode(mode)
 
     def lstream_data(self) -> None:
         self.device.stream_data()
