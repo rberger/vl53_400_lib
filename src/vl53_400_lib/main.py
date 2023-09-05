@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import click
-import device_access
+from .device_access import SerialAccess
 from loguru import logger
 import sys
 import time
@@ -20,7 +20,7 @@ class App:
         self.timeout = timeout
         self.return_rate = return_rate
         self.debug = debug
-        self.device = device_access.SerialAccess(serial_port, baud_rate, timeout)
+        self.device = SerialAccess(serial_port, baud_rate, timeout)
         self.count = 0
         self.start_time = time.time()
 
@@ -99,7 +99,7 @@ def exit_with_msg(msg):
     "--op", type=click.Choice(["stream", "get_return_rate", "lstream", "reset"]), help="The operation to perform."
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
-def main(serial_port: str, baud_rate: int, timeout: int, return_rate: float, mode: str, op: str, debug: bool) -> None:
+def cli(serial_port: str, baud_rate: int, timeout: int, return_rate: float, mode: str, op: str, debug: bool) -> None:
     logger.enable("device_access")
     logger.remove(0)
     if debug:
@@ -130,7 +130,7 @@ def main(serial_port: str, baud_rate: int, timeout: int, return_rate: float, mod
 
 if __name__ == "__main__":
     try:
-        main()
+        cli()
     except KeyboardInterrupt:
         logger.warning("Closing the serial port.")
         self.ser.close()

@@ -6,6 +6,9 @@ authors = ["Robert J. Berger <rberger@ibd.com>"]
 readme = "README.md"
 packages = [{include = "vl53_400_lib", from = "src"}]
 
+[tool.poetry.scripts]
+vl53 = "vl53_400_lib.main:cli"
+
 [tool.poetry.dependencies]
 python = "^3.11"
 pyserial = "^3.5"
@@ -19,6 +22,8 @@ ruff = "^0.0.287"
 pytest = "^7.4.1"
 black = "^23.7.0"
 click = "^8.1.7"
+coverage = "^7.3.0"
+pytest-cov = "^4.1.0"
 
 [tool.black]
 line-length = 120
