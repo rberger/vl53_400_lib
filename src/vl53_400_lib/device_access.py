@@ -66,12 +66,6 @@ class SerialAccess:
         """
         self.send_command(b"\x50\x06\x00\x00\x00\x01")
 
-    def stop(self) -> None:
-        """
-        This method stops the lidar serial spew.
-        """
-        self.send_command(b"\x50\x06\x00\x38\x00\x01")
-
     def set_sensor_mode(self, mode: str) -> None:
         """
         This method sets the sensor mode.
@@ -109,13 +103,18 @@ class SerialAccess:
         logger.debug(f"cmd: {cmd.hex()}")
         self.send_command(cmd)
 
-    def stream_data(self) -> None:
+    def stream_data(self, loop: bool = True) -> None:
         """
         This method streams data from the serial port.
+        Args:
+            loop (bool): Whether or not to loop forever.
+               Defaults to True. Set to false to exit after one loop (for testing)
         """
         while True:
             data = self.ser.readline().decode("utf-8").strip()
             print(data)
+            if loop is False:
+                break
 
     def get_distance(self) -> dict[str, str]:
         """

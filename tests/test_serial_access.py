@@ -68,6 +68,19 @@ class TestSerialAccess(unittest.TestCase):
         result = self.serial_access_obj.get_distance()
         self.assertEqual(result, {"state_code": "4", "state": "Range Valid", "distance": "456", "units": "mm"})
 
+    def test_set_return_rate(self):
+        self.serial_access_obj.set_return_rate("10")
+        expected_command = add_crc(bytearray.fromhex("500600030006"))
+        self.serial_port_instance.write.assert_called_once_with(expected_command)
+
+    def test_stream_data(self):
+        mock_data = [b"State;4 , Range Valid", b"d: 456 mm"]
+
+        # Simulate multiple readline calls with mock data
+        self.serial_port_instance.readline.side_effect = mock_data
+        self.serial_access_obj.stream_data(False)
+        self.serial_port_instance.readline.assert_called()
+
 
 if __name__ == "__main__":
     unittest.main()
