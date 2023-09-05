@@ -20,7 +20,9 @@ class App:
         self.timeout = timeout
         self.return_rate = return_rate
         self.debug = debug
-        self.device = device_access.Serial(serial_port, baud_rate, timeout)
+        self.device = device_access.SerialAccess(serial_port, baud_rate, timeout)
+        self.count = 0
+        self.start_time = time.time()
 
     def reset(self) -> None:
         self.device.reset()
@@ -31,26 +33,32 @@ class App:
     def lstream_data(self) -> None:
         self.device.stream_data()
 
+    def calc_rate(self) -> int:
+        """
+        This method calculates the rate at which data is received from the lidar.
+        """
+        self.count += 1
+
+        # Calculate rate
+        elapsed_time = time.time() - self.start_time
+        rate = self.count / elapsed_time
+
+        logger.debug(f"Rate: {rate} data points per second")
+        return rate
+
     def stream_data(self) -> None:
         """
         This method streams data from the serial port.
         """
-        start_time = time.time()
-        count = 0
+        self.start_time = time.time()
+        self.count = 0
         while True:
             sample = self.device.get_distance()
             if sample == {} or None:
                 logger.warning("No data received. Exiting.")
                 break
             else:
-                count += 1
-
-                # Calculate rate
-                elapsed_time = time.time() - start_time
-                rate = count / elapsed_time
-
-                # Print rate
-                print(f"Rate: {rate} data points per second")
+                print(f"{sample['distance']} {sample['units']}\t{sample['state']}")
 
     def get_return_rate(self) -> str:
         """
@@ -91,7 +99,7 @@ def exit_with_msg(msg):
     "--op", type=click.Choice(["stream", "get_return_rate", "lstream", "reset"]), help="The operation to perform."
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
-def main(serial_port: str, baud_rate: int, timeout: int, return_rate: float, debug: bool, op: str) -> None:
+def main(serial_port: str, baud_rate: int, timeout: int, return_rate: float, mode: str, op: str, debug: bool) -> None:
     logger.enable("device_access")
     logger.remove(0)
     if debug:

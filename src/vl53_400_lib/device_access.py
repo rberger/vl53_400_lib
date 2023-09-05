@@ -6,10 +6,10 @@ from loguru import logger
 from modbus_crc import add_crc, check_crc
 
 # Disable logging for this module based on loguru documentation
-logger.disable(__name__)
+logger.enable(__name__)
 
 
-class Serial:
+class SerialAccess:
     """
     This class is used to establish a connection to the serial port and read data from it.
     """
