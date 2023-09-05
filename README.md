@@ -109,7 +109,22 @@ poetry install
 ### To run the cli:
 
 ```
-poetry run vl53 --help
+> poetry run vl53 --help
+
+Usage: vl53 [OPTIONS]
+
+Options:
+  --serial-port TEXT              The serial port to connect to.
+  --baud-rate INTEGER             The baud rate to use.
+  --timeout INTEGER               The timeout to use.
+  --return-rate [0.1|0.2|0.5|1|2|5|10|20|50|100]
+                                  Set Return Rate in Hz
+  --mode [serial|modbus|iic]      Comm mode (modbus stops serial spew)
+  --op [stream|get_return_rate|lstream|reset]
+                                  The operation to perform.
+  --debug                         Enable debug logging.
+  --help                          Show this message and exit.
+
 ```
 
 ## TODO:
