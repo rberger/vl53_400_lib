@@ -6,7 +6,7 @@ from loguru import logger
 from modbus_crc import add_crc, check_crc
 
 # Disable logging for this module based on loguru documentation
-logger.enable(__name__)
+logger.disable(__name__)
 
 
 class SerialAccess:

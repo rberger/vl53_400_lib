@@ -94,7 +94,7 @@ def exit_with_msg(msg):
     type=click.Choice(["0.1", "0.2", "0.5", "1", "2", "5", "10", "20", "50", "100"]),
     help="Set Return Rate in Hz",
 )
-@click.option("--mode", type=click.Choice(["serial", "modbus", "IIC"]), help="Comm mode (modbus stops serial spew)")
+@click.option("--mode", type=click.Choice(["serial", "modbus", "iic"]), help="Comm mode (modbus stops serial spew)")
 @click.option(
     "--op", type=click.Choice(["stream", "get_return_rate", "lstream", "reset"]), help="The operation to perform."
 )
