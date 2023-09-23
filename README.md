@@ -133,4 +133,3 @@ Options:
 
 ## TODO:
 * Calibration
-* Publish to Pypi.org
