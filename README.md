@@ -2,9 +2,13 @@
 
 Python Library and CLI for the VL53-400 laser rangefinder with Serial interface
 
-This is the  [MJ-VL53-400 unit Sold by MengJie](https://www.amazon.com/dp/B0C2YWYW62)
+__NOTE: This is still a bit underconstruction. The Functions here do seem to work, but not all capabilities of the chipset is handled yet. You should be able to do measurements though.__
 
-Its basically a [STMicroelectronics VL53L0X](https://www.st.com/en/imaging-and-photonics-solutions/vl53l0x.html). I think its actually a [WitMotion Laser Distance Sensor WT-VL53L0 Distance Module UART Output ](https://witmotion-sensor.com/collections/laser-range-sensor/products/witmotion-laser-distance-sensor-wt-vl53l1-distance-module-uart-output-3-5v) repackaged by MengJie
+This is for the  [MJ-VL53-400 unit Sold by MengJie](https://www.amazon.com/dp/B0C2YWYW62).
+
+Its basically a [STMicroelectronics VL53L0X](https://www.st.com/en/imaging-and-photonics-solutions/vl53l0x.html) with a UART so you can use it via a USB -> TTL Serial adapter and not deal with IIC or Modbus.
+
+It seems to actually be a [WitMotion Laser Distance Sensor WT-VL53L0 Distance Module UART Output ](https://witmotion-sensor.com/collections/laser-range-sensor/products/witmotion-laser-distance-sensor-wt-vl53l1-distance-module-uart-output-3-5v) repackaged by MengJie
 
 * [Menjie MJ-VL53-400 User Manual](https://drive.google.com/drive/folders/1UvIrseDLtCvuBqcgA6oYrWwT4huYJUFw)
 * [ST API Info](https://www.st.com/en/embedded-software/stsw-img005.html#overview) 
