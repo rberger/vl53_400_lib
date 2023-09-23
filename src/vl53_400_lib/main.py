@@ -6,9 +6,9 @@ import sys
 import time
 
 
-class App:
+class RangeFinder:
     """
-    This class is used to create a CLI application.
+    This class is used to access the VL53-400 rangefinder sensor.
     """
 
     def __init__(self, serial_port: str, baud_rate: int, timeout: int, return_rate: float, debug: bool) -> None:
@@ -48,7 +48,7 @@ class App:
 
     def stream_data(self) -> None:
         """
-        This method streams data from the serial port.
+        This method streams data from the serial port to stdout.
         """
         self.start_time = time.time()
         self.count = 0
@@ -73,8 +73,6 @@ class App:
     def set_return_rate(self, rate) -> None:
         """
         Sets the return rate from the lidar
-        Returns:
-            str: The return rate
         """
         self.device.set_return_rate(rate)
 
@@ -107,23 +105,23 @@ def cli(serial_port: str, baud_rate: int, timeout: int, return_rate: float, mode
     else:
         logger.add(sys.stderr, level="WARNING")
     logger.info(f"serial_port: {serial_port}, baud_rate: {baud_rate} return_rate: {return_rate} debug: {debug}")
-    app = App(serial_port, baud_rate, timeout, return_rate, debug)
+    range_finder = RangeFinder(serial_port, baud_rate, timeout, return_rate, debug)
 
     op = "set_return_rate" if return_rate else op
     op = "mode" if mode else op
     match op:
         case "reset":
-            app.reset()
+            range_finder.reset()
         case "mode":
-            app.set_sensor_mode("mode")
+            range_finder.set_sensor_mode("mode")
         case "get_return_rate":
-            result = app.get_return_rate()
+            result = range_finder.get_return_rate()
         case "stream":
-            app.stream_data()
+            range_finder.stream_data()
         case "lstream":
-            app.lstream_data()
+            range_finder.lstream_data()
         case "set_return_rate":
-            app.set_return_rate(return_rate)
+            range_finder.set_return_rate(return_rate)
         case _:
             exit_with_msg("No operation specified. Exiting.")
 

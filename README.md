@@ -1,4 +1,4 @@
-# vl53-400 Library
+# vl53-400 Laser RangeFinder Library
 
 Python Library and CLI for the VL53-400 laser rangefinder with Serial interface
 
@@ -17,88 +17,105 @@ It seems to actually be a [WitMotion Laser Distance Sensor WT-VL53L0 Distance Mo
 
 Class `device_access.SerialAccess` contains all the methods for using it
 
-### Init
+### Instantiate the RangeFinder Class
 
 ``` python
-    def __init__(self, serial_port: str, baud_rate: int, timeout: int = 1) -> None:
-        """
-        This method initializes the class.
-        Args:
-            serial_port (str): The serial port to connect to.
-            baud_rate (int): The baud rate to use.
-            timeout (int): The timeout to use.
-        """
+RangeFinder(serial_port: str, baud_rate: int, timeout: int, debug: bool)
 ```
+#### Arguments
+Need to supply all of these for now
+
+* `serial_port: str` - The serial port the RangeFinder is connected too such as `/dev/tty.usbserial-910`
+* `baud_rate: int` - Baud Rate. Should be `115200`
+* `timeout: int` - Timeout. Should use `1`
+* `return_rate: float` - Should be one of `"0.1", "0.2", "0.5", "1", "2", "5", "10", "20", "50", "100"`
+* `debug: bool` - Set `True` to enable debugging, otherwise `False`
+
+#### Example:
+
+``` python
+    from vl53_400_lib import RangeFinder
+
+    range_finder = RangeFinder("/dev/tty.usbserial-910", 115200, 1, 10, False)
+```
+
 
 ### Reset
 
+This method resets the Rangefinder.
+
 ``` python
-    def reset(self) -> None:
-        """
-        This method resets the lidar.
-        """
+    range_finder.reset()
 ```
 
 ### Set Sensor mode
 
+This method sets the sensor mode between serial (default), modbus and iic.
+
+#### Arguments
+* `mode: str` - The mode to set. (`serial`, `modbus`, `iic`)
+                Probably only want to use serial or modbus.
+                modbus will stop the  serial updates
+
+#### Example:
+
 ``` python
-    def set_sensor_mode(self, mode: str) -> None:
-        """
-        This method sets the sensor mode.
-        Args:
-            mode (str): The mode to set. (serial, modbus, iic)
-                        Probably only want to use serial or modbus. modbus will stop the  serial updates
-        """
+    range_finder.set_sensor_mode("modbus")
+
 ```
 
 ### Get Return Rate
 
+Gets the return rate setting
+
+#### Returns
+
+`str`: The return rate in Hz
+
+#### Example
+
 ``` python
-    def get_return_rate(self) -> str:
-        """
-        Gets the return rate setting
-        Returns:
-            str: The return rate in Hz
-        """
+    rate = range_finder.get_return_rate()
 ```
 
 ### Set Return Rate
 
+#### Arguments
+
+`rate: str` - One of `"0.1", "0.2", "0.5", "1", "2", "5", "10", "20", "50", "100"`
+
+#### Example
+
 ``` python
-    def set_return_rate(self, rate: str) -> None:
-        """
-        Gets the return rate from the lidar
-        Returns:
-            str: The return rate
-        """
+    range_finder.set_return_rate("0.5")
 ```
 
 ### Stream Data
 
-Only prints the data to stdout
+__Only prints the data to stdout__
 
-    ``` python
-    def stream_data(self, loop: bool = True) -> None:
-        """
-        This method streams data from the serial port.
-        Args:
-            loop (bool): Whether or not to loop forever.
-               Defaults to True. Set to false to exit after one loop (for testing)
-        """
-    ```
+This method streams data from the serial port to stdout. It does not return
+anything and will block until interrupted if loop is True.
+
+#### Argument
+`loop: bool` - Whether or not to loop forever.
+               Defaults to True.
+               Set to false to exit after one loop (for testing)
+
+``` python
+range_finder.stream_data(True)
+```
 
 ### Get Distance
 
-This is the main workhorse function to use
+This is the main workhorse function to use. It will fetch the distance data from the Rangefinder
+Reads data from the serial port and returns a dictionary.
 
+#### Returns
+`data: dict` -  A dictionary containing the `distance` and `units`,
+                as well as the `state` and `state_code`.
 ``` python
-    def get_distance(self) -> dict[str, str]:
-        """
-        This method reads data from the serial port and returns a dictionary.
-        Returns:
-            dict: A dictionary containing the `distance` and `units`,
-                  as well as the `state` and `state_code`.
-        """
+    data = range_finder.get_distance()
 ```
 
 ## Main.py has a CLI for exercising all functions
@@ -132,4 +149,5 @@ Options:
 ```
 
 ## TODO:
+* Make initialization key/values with defaults
 * Calibration
