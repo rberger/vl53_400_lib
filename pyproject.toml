@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vl53_400_lib"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python library for using the VL53-400 laser rangerfinder via serial port"
 authors = ["Robert J. Berger <rberger@ibd.com>"]
 readme = "README.md"
