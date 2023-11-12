@@ -1,1 +1,2 @@
 from vl53_400_lib.main import RangeFinder
+from vl53_400_lib.async_device_access import AsyncSerialAccess

@@ -12,6 +12,7 @@ vl53 = "vl53_400_lib.main:cli"
 [tool.poetry.dependencies]
 python = "^3.11"
 pyserial = "^3.5"
+pyserial-asyncio = "^0.6"
 loguru = "^0.7.0"
 mypy = "^1.5.1"
 modbus-crc = "^1.3"

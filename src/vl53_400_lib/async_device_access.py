@@ -1,26 +1,29 @@
-import serial
+import asyncio
 import re
 from loguru import logger
 from modbus_crc import add_crc, check_crc
+import serial_asyncio
 
 # Disable logging for this module based on loguru documentation
 logger.disable(__name__)
 
 
-class SerialAccess:
+class AsyncSerialAccess:
     """
     This class is used to establish a connection to the serial port and read data from it.
     """
 
     def __init__(self, serial_port: str, baud_rate: int, timeout: int = 1) -> None:
         """
-        This method initializes the class.
+        This method initializes the class for async usage.
         Args:
             serial_port (str): The serial port to connect to.
             baud_rate (int): The baud rate to use.
             timeout (int): The timeout to use.
         """
-        self.ser = serial.Serial(port=serial_port, baudrate=baud_rate, timeout=1)
+        self.serial_port = serial_port
+        self.baud_rate = baud_rate
+        self.timeout = timeout
 
         self.state_regx = r"State;(?P<state_code>\d+)\s+,\s+(?P<state>\w+\s+\w+)"
         self.data_regx = r"d:\s+(?P<distance>\d+)\s+(?P<units>\w+)"
@@ -50,13 +53,20 @@ class SerialAccess:
             "0x9": "100",
         }
 
-    def send_command(self, command: bytes) -> None:
+    async def open_connection(self):
+        self.reader, self.writer = await serial_asyncio.open_serial_connection(
+            url=self.serial_port, baudrate=self.baud_rate, timeout=self.timeout
+        )
+
+    async def send_command(self, command: bytes) -> None:
         """
         This method sends a command to the serial port. Adds CRC to the command.
         Args:
             command (bytes): The command to send without CRC.
         """
-        self.ser.write(add_crc(command))
+        cmd_with_crc = add_crc(command)
+        self.writer.write(cmd_with_crc)
+        await self.writer.drain()
 
     def reset(self) -> None:
         """
@@ -101,7 +111,7 @@ class SerialAccess:
         logger.debug(f"cmd: {cmd.hex()}")
         self.send_command(cmd)
 
-    def stream_data(self, loop: bool = True) -> None:
+    async def stream_data(self, loop: bool = True) -> None:
         """
         This method streams data from the serial port.
         Args:
@@ -109,12 +119,12 @@ class SerialAccess:
                Defaults to True. Set to false to exit after one loop (for testing)
         """
         while True:
-            data = self.ser.readline().decode("utf-8").strip()
-            print(data)
-            if loop is False:
+            data = await self.reader.readline()
+            print(data.decode("utf-8").strip())
+            if not loop:
                 break
 
-    def get_distance(self) -> dict[str, str]:
+    async def get_distance(self) -> dict[str, str]:
         """
         This method reads data from the serial port and returns a dictionary.
         Returns:
@@ -123,9 +133,9 @@ class SerialAccess:
         """
         try:
             while True:
-                # Read data from the serial port
                 try:
-                    data = self.ser.readline().decode("utf-8").strip()
+                    data = await self.reader.readline()
+                    data = data.decode("utf-8").strip()
                 except UnicodeDecodeError:
                     logger.warning("UnicodeDecodeError outer read")
                     continue
@@ -134,7 +144,8 @@ class SerialAccess:
                 # next line of data will contain the distance info
                 if state_match:
                     try:
-                        next_data = self.ser.readline().decode("utf-8").strip()
+                        next_data = await self.reader.readline()
+                        next_data = next_data.decode("utf-8").strip()
                     except UnicodeDecodeError:
                         logger.warning("UnicodeDecodeError")
                         continue
@@ -146,6 +157,18 @@ class SerialAccess:
         # To close the serial port gracefully, use Ctrl+C to break the loop
         except KeyboardInterrupt:
             logger.warning("Keyboard Interrupt: Closing the serial port.")
-            self.ser.close()
+            self.writer.close()
+            await self.writer.wait_closed()
             return {}
         return {}
+
+
+# Example usage
+async def main():
+    serial_access = AsyncSerialAccess(serial_port="/dev/tty.usbserial-910", baud_rate=115200)
+    await serial_access.open_connection()
+    await serial_access.stream_data()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
