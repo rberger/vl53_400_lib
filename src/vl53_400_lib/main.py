@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import click
-from .device_access import SerialAccess
+from vl53_400_lib.device_access import SerialAccess
 from loguru import logger
 import sys
 import time
@@ -15,6 +15,9 @@ class RangeFinder:
         """
         This method initializes the class.
         """
+        logger.debug(
+            f"RangeFinder.init: {serial_port}, baud_rate: {baud_rate} timeout: {timeout} return_rate: {return_rate} debug: {debug}"
+        )
         self.serial_port = serial_port
         self.baud_rate = baud_rate
         self.timeout = timeout
